@@ -16,67 +16,65 @@ class GildedRose {
 
     public void updateQuality() {
         for (Item item : items) {
+            updateItemSellDate(item);
             updateItemQuality(item);
         }
     }
 
+    private static void updateItemSellDate(Item item) {
+        switch (item.name) {
+            case ITEM_SULFURAS_HAND_OF_RAGNAROS:
+                break;
+            default:
+                item.sellIn--;
+                break;
+        }
+    }
+
     private static void updateItemQuality(Item item) {
-        if (!item.name.equals(ITEM_AGED_BRIE)
-                && !item.name.equals(ITEM_BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT)) {
-            if (item.quality > 0) {
-                if (!item.name.equals(ITEM_SULFURAS_HAND_OF_RAGNAROS)) {
-                    item.quality = item.quality - 1;
+        switch (item.name) {
+            case ITEM_SULFURAS_HAND_OF_RAGNAROS:
+                // It is imperative we exit before restricting the quality of regular items
+                return;
+            case ITEM_AGED_BRIE:
+                if (item.sellIn < 0) {
+                    item.quality += 2;
+                } else {
+                    item.quality++;
                 }
-                if (item.name.equals(ITEM_CONJURED_MANA_CAKE)){
+                break;
+            case ITEM_BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT:
+                if (item.sellIn < 0) {
+                    item.quality = 0;
+                } else if (item.sellIn < 6) {
+                    item.quality += 3;
+                } else if (item.sellIn < 11) {
+                    item.quality += 2;
+                } else {
+                    item.quality++;
+                }
+                break;
+            case ITEM_CONJURED_MANA_CAKE:
+                if (item.sellIn < 0) {
+                    item.quality -= 4;
+                } else {
+                    item.quality -= 2;
+                }
+                break;
+            default:
+                if (item.sellIn < 0) {
+                    item.quality -= 2;
+                } else {
                     item.quality--;
                 }
-            }
-        } else {
-            if (item.quality < MAXIMUM_ITEM_QUALITY) {
-                item.quality = item.quality + 1;
-
-                if (item.name.equals(ITEM_BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT)) {
-                    if (item.sellIn < 11) {
-                        if (item.quality < MAXIMUM_ITEM_QUALITY) {
-                            item.quality = item.quality + 1;
-                        }
-                    }
-
-                    if (item.sellIn < 6) {
-                        if (item.quality < MAXIMUM_ITEM_QUALITY) {
-                            item.quality = item.quality + 1;
-                        }
-                    }
-                }
-            }
+                break;
         }
 
-        if (!item.name.equals(ITEM_SULFURAS_HAND_OF_RAGNAROS)) {
-            item.sellIn = item.sellIn - 1;
+        // Keep quality within bounds
+        if (item.quality > MAXIMUM_ITEM_QUALITY) {
+            item.quality = MAXIMUM_ITEM_QUALITY;
         }
 
-        if (item.sellIn < 0) {
-            if (!item.name.equals(ITEM_AGED_BRIE)) {
-                if (!item.name.equals(ITEM_BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT)) {
-                    if (item.quality > 0) {
-                        if (!item.name.equals(ITEM_SULFURAS_HAND_OF_RAGNAROS)) {
-                            item.quality = item.quality - 1;
-                        }
-                        if (item.name.equals(ITEM_CONJURED_MANA_CAKE)){
-                            item.quality--;
-                        }
-                    }
-                } else {
-                    item.quality = 0;
-                }
-            } else {
-                if (item.quality < MAXIMUM_ITEM_QUALITY) {
-                    item.quality = item.quality + 1;
-                }
-            }
-        }
-
-        // Item quality cannot be negative
         if (item.quality < 0) {
             item.quality = 0;
         }
