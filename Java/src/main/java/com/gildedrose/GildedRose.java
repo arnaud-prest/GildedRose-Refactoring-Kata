@@ -55,13 +55,15 @@ class GildedRose {
             item.sellIn = item.sellIn - 1;
         }
 
-
         if (item.sellIn < 0) {
             if (!item.name.equals(ITEM_AGED_BRIE)) {
                 if (!item.name.equals(ITEM_BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT)) {
                     if (item.quality > 0) {
                         if (!item.name.equals(ITEM_SULFURAS_HAND_OF_RAGNAROS)) {
                             item.quality = item.quality - 1;
+                        }
+                        if (item.name.equals(ITEM_CONJURED_MANA_CAKE)){
+                            item.quality--;
                         }
                     }
                 } else {
